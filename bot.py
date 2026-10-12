@@ -77,4 +77,4 @@ async def on_ready():
     if not todo.is_running():
         todo.start()
 
-client.run(BOT_TOKEN)
+client.run(str(BOT_TOKEN))
