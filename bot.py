@@ -27,9 +27,9 @@ def construct_message(MAX_LENGTH, mode, data):
         messages.append(message_lines)
     else:
         for item in data:
-            routes = f"\nAffected routes: {item["affectedRoutes"]}" if item["affectedRoutes"] else ""
-            stops = f"\nAffected Stops: {item["affectedStops"]}" if item["affectedStops"] else ""
-            line_str = f"**{item["description"]}** {routes} {stops} \n\n"
+            routes = f"\nAffected routes: {item['affectedRoutes']}" if item['affectedRoutes'] else ""
+            stops = f"\nAffected Stops: {item['affectedStops']}" if item['affectedStops'] else ""
+            line_str = f"**{item['description']}** {routes} {stops} \n\n"
 
             if len(message_lines) + len(line_str) > MAX_LENGTH:
                 messages.append(message_lines)
