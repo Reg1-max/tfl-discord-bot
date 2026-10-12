@@ -1,6 +1,9 @@
 import discord
+from discord.ext import tasks
 from tfldata import get_disruptions
 from dotenv import load_dotenv
+import datetime
+from zoneinfo import ZoneInfo
 import os
 
 load_dotenv()
@@ -12,6 +15,9 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 client = discord.Client(intents=intents)
+
+tz = ZoneInfo('Europe/London')
+SIX_AM = datetime.time(hour=6, minute=0, tzinfo=tz)
 
 def construct_message(MAX_LENGTH, mode, data):
     messages = []
@@ -34,9 +40,8 @@ def construct_message(MAX_LENGTH, mode, data):
             messages.append(message_lines)
     return messages
 
-@client.event
-async def on_ready():
-    print(f'We have logged in as {client.user}')
+@tasks.loop(time=SIX_AM)
+async def todo():
     channel = client.get_channel(CHANNEL_ID)
     tube = get_disruptions("tube")
     train = get_disruptions("national-rail")
@@ -60,5 +65,11 @@ async def on_ready():
     bus_messages = construct_message(MAX_LENGTH, "bus", bus)
     for msg in bus_messages:
         await channel.send(msg)
+
+@client.event
+async def on_ready():
+    print(f'We have logged in as {client.user}')
+    if not todo.is_running():
+        todo.start()
 
 client.run(BOT_TOKEN)
