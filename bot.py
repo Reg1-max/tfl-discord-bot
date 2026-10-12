@@ -10,6 +10,7 @@ load_dotenv()
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 CHANNEL_ID = int(os.getenv('CHANNEL_ID'))
+PORT = 10000
 
 intents = discord.Intents.default()
 intents.message_content = True
