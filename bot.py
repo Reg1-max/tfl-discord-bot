@@ -76,5 +76,6 @@ async def on_ready():
     print(f'We have logged in as {client.user}')
     if not todo.is_running():
         todo.start()
+        print("disruptions report should now be in discord :)")
 
 client.run(str(BOT_TOKEN))
