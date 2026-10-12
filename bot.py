@@ -46,6 +46,7 @@ async def todo():
     channel = client.get_channel(CHANNEL_ID)
     tube = get_disruptions("tube")
     train = get_disruptions("national-rail")
+    lizzy = get_disruptions("elizabeth-line")
     tram = get_disruptions("tram")
     bus = get_disruptions("bus")
     
@@ -57,6 +58,10 @@ async def todo():
 
     train_messages = construct_message(MAX_LENGTH, "train", train)
     for msg in train_messages:
+        await channel.send(msg)
+
+    lizzy_messages = construct_message(MAX_LENGTH, "Elizabeth Line", lizzy)
+    for msg in lizzy_messages:
         await channel.send(msg)
 
     tram_messages = construct_message(MAX_LENGTH, "tram", tram)
