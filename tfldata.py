@@ -1,16 +1,19 @@
 import requests
 
-def get_disruptions(mode):
-    r = requests.get(f'https://api.tfl.gov.uk/Line/Mode/{mode}/Disruption').json()
-    r = list(filter(lambda item: not(item["category"] == "Information" and "nationalrail" not in item["description"]), r))
+def get_disruptions(ids):
+    r = requests.get(f'https://api.tfl.gov.uk/Line/{ids}/Status?detail=true').json()
+    ls = []
+    for i in r:
+      lineStatuses = i["lineStatuses"]
+      for j in lineStatuses:
+         if j["statusSeverity"] != 10:
+            ls.append(j["reason"])
 
     seen = []
     i = 0
-    while i < len(r):
-        if r[i] in seen:
-            r.pop(i)
-        else:
-            seen.append(r[i])
-            i += 1
+    while i < len(ls):
+        if ls[i] not in seen:
+            seen.append(ls[i])
+        i += 1
 
-    return r
+    return seen
