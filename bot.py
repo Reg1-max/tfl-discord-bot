@@ -1,5 +1,5 @@
 import discord
-from discord.ext import tasks
+from discord.ext import tasks, commands
 from tfldata import get_disruptions
 from dotenv import load_dotenv
 import datetime
@@ -14,7 +14,7 @@ CHANNEL_ID = int(os.getenv('CHANNEL_ID'))
 intents = discord.Intents.default()
 intents.message_content = True
 
-client = discord.Client(intents=intents)
+bot = commands.Bot(command_prefix="/", intents=intents)
 
 tz = ZoneInfo('Europe/London')
 SIX_AM = datetime.time(hour=6, minute=0, tzinfo=tz)
@@ -42,7 +42,7 @@ def construct_message(MAX_LENGTH, mode, data):
 
 @tasks.loop(time=SIX_AM)
 async def todo():
-    channel = client.get_channel(CHANNEL_ID)
+    channel = bot.get_channel(CHANNEL_ID)
     tube = get_disruptions("tube")
     train = get_disruptions("national-rail")
     lizzy = get_disruptions("elizabeth-line")
@@ -71,11 +71,11 @@ async def todo():
     for msg in bus_messages:
         await channel.send(msg)
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f'We have logged in as {client.user}')
+    print(f'We have logged in as {bot.user}')
     if not todo.is_running():
         todo.start()
         print("disruptions report should now be in discord :)")
 
-client.run(str(BOT_TOKEN))
+bot.run(str(BOT_TOKEN))
