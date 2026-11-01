@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import datetime
 from zoneinfo import ZoneInfo
 import os
+import asyncio
 
 load_dotenv()
 
@@ -17,7 +18,22 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 tz = ZoneInfo('Europe/London')
-SIX_AM = datetime.time(hour=6, minute=0, tzinfo=tz)
+SIX_AM = datetime.time(hour=13, minute=13, tzinfo=tz)
+
+# 1. Health check handler for Render and cron-job.org
+async def handle_health_check(reader, writer):
+    response = "HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nOK"
+    writer.write(response.encode("utf-8"))
+    await writer.drain()
+    writer.close()
+    await writer.wait_closed()
+
+async def start_health_server():
+    # Read the PORT environment variable injected by Render
+    port = int(os.getenv("PORT", 10000))
+    # Must bind to 0.0.0.0 so Render's internal proxy detects it
+    await asyncio.start_server(handle_health_check, "0.0.0.0", port)
+    print(f"Health check server listening on 0.0.0.0:{port}")
 
 def construct_message(MAX_LENGTH, mode, data):
     messages = []
