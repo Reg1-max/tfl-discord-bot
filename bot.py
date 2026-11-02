@@ -78,4 +78,9 @@ async def on_ready():
         todo.start()
         print("disruptions report should now be in discord :)")
 
+async def setup_hook():
+    await start_health_server()
+
+client.setup_hook = setup_hook
+
 client.run(str(BOT_TOKEN))
