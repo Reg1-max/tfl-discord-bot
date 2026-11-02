@@ -94,9 +94,4 @@ async def on_ready():
         todo.start()
         print("disruptions report should now be in discord :)")
 
-async def main():
-    await start_health_server()
-    client.run(str(BOT_TOKEN))
-
-if __name__ == "__main__":
-    asyncio.run(main())
+client.run(str(BOT_TOKEN))
